@@ -1,0 +1,100 @@
+@model TungBlog.Models.AdminStatistics
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex align-items-center">
+                <div class="me-3">
+                    <label>Từ ngày:</label>
+                    <input type="date" class="form-control" />
+                </div>
+                <div class="me-3">
+                    <label>Đến ngày:</label>
+                    <input type="date" class="form-control" />
+                </div>
+                <div class="mt-4">
+                    <button class="btn btn-primary">
+                        <i class="bi bi-check2"></i>
+                        Áp dụng
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="stat-card pending">
+                <div class="stat-title">Bài viết đang chờ duyệt</div>
+                <div class="stat-number">@Model.PendingArticles</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card approved">
+                <div class="stat-title">Bài viết đã duyệt</div>
+                <div class="stat-number">@(Model.TotalArticles - Model.PendingArticles)</div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="stat-card rejected">
+                <div class="stat-title">Bài viết bị từ chối</div>
+                <div class="stat-number">0</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Thống kê bài viết theo Tác giả</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Tác giả</th>
+                                <th>Số bài viết</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var author in ViewBag.AuthorStats ?? new List<dynamic>())
+                            {
+                                <tr>
+                                    <td>@author.FullName</td>
+                                    <td>@author.ArticleCount</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Thống kê bài viết theo Chủ đề</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Chủ đề</th>
+                                <th>Số bài viết</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var category in ViewBag.CategoryStats ?? new List<dynamic>())
+                            {
+                                <tr>
+                                    <td>@category.Name</td>
+                                    <td>@category.ArticleCount</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

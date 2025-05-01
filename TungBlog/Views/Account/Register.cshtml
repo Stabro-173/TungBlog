@@ -1,0 +1,129 @@
+﻿@model TungBlog.Models.UserAccount
+@{
+    Layout = null;
+    ViewData["Title"] = "Đăng ký tài khoản";
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <title>Đăng ký - TungBlog</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" rel="stylesheet" />
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            background: url('/images/Background2.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .register-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .register-box {
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 10px;
+            width: 400px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .footer {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 10px 0;
+            text-align: center;
+            font-size: 14px;
+        }
+
+            .footer a {
+                margin: 0 10px;
+                color: #333;
+                text-decoration: none;
+            }
+
+                .footer a:hover {
+                    text-decoration: underline;
+                }
+    </style>
+</head>
+<body>
+
+    <div class="register-container">
+        <div class="register-box">
+            <h2 class="text-center mb-4">Đăng ký tài khoản</h2>
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger text-center">@ViewBag.Error</div>
+            }
+            <form asp-action="Register" method="post">
+                <div class="form-group mb-3">
+                    <label for="FullName">Họ tên</label>
+                    <input asp-for="FullName" class="form-control" required />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="DateOfBirth">Ngày sinh</label>
+                    <input id="dob" name="DateOfBirth" class="form-control" placeholder="Chọn ngày sinh" type="text" required />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="Email">Email</label>
+                    <input asp-for="Email" type="email" class="form-control" required />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="Username">Tên đăng nhập</label>
+                    <input asp-for="Username" class="form-control" required />
+                </div>
+
+                <div class="form-group mb-4">
+                    <label for="Password">Mật khẩu</label>
+                    <input asp-for="Password" type="password" class="form-control" required />
+                </div>
+
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn btn-success">Đăng ký</button>
+                </div>
+
+                <div class="text-center">
+                    Đã có tài khoản? <a href="/Account/Login">Đăng nhập</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="footer">
+        📞 <a href="tel:0123456789">Hotline</a> |
+        ✉️ <a href="mailto:tungblog@example.com">Email</a> |
+        🌐 <a href="https://facebook.com/tungblog" target="_blank">Facebook</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
+
+    <script>
+        const picker = new Litepicker({
+            element: document.getElementById('dob'),
+            format: 'YYYY-MM-DD',
+            dropdowns: {
+                minYear: 1900,
+                maxYear: new Date().getFullYear(),
+                months: true,
+                years: true,
+            },
+            maxDate: new Date(),
+            autoApply: true,
+            allowRepick: false
+        });
+    </script>
+
+</body>
+</html>

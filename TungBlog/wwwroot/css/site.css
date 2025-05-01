@@ -1,0 +1,151 @@
+/* Common styles */
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/* Admin sidebar styles */
+.sidebar {
+  position: fixed;
+  top: 56px; /* Height of navbar */
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  padding: 48px 0 0;
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+.sidebar .nav-link {
+  font-weight: 500;
+  color: #333;
+}
+
+.sidebar .nav-link:hover {
+  color: #0d6efd;
+}
+
+.sidebar .nav-link .bi {
+  margin-right: 4px;
+  color: #727272;
+}
+
+.sidebar .nav-link:hover .bi {
+  color: #0d6efd;
+}
+
+/* Main content area for admin */
+.sidebar-sticky {
+  position: relative;
+  top: 0;
+  height: calc(100vh - 48px);
+  padding-top: .5rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* Author navbar styles */
+.navbar-dark .navbar-nav .nav-link {
+  color: rgba(255, 255, 255, .8);
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+  color: rgba(255, 255, 255, 1);
+}
+
+/* Dropdown menu styles */
+.dropdown-menu {
+  margin-top: 0;
+}
+
+/* Profile icon styles */
+.bi-person-circle {
+  font-size: 1.2rem;
+}
+
+/* Custom styles for statistics page */
+.stats-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, .1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.stats-card h3 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* Date range picker styles */
+.date-range-picker {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+/* Article list styles */
+.article-list {
+  margin-top: 20px;
+}
+
+.article-item {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 15px;
+  margin-bottom: 15px;
+}
+
+.article-title {
+  font-size: 1.2rem;
+  color: #0d6efd;
+  margin-bottom: 10px;
+}
+
+.article-meta {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+/* Status badges */
+.status-pending {
+  background-color: #ffc107;
+  color: #000;
+}
+
+.status-approved {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.status-rejected {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}

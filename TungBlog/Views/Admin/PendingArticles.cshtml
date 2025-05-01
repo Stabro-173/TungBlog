@@ -1,0 +1,64 @@
+@model IEnumerable<TungBlog.Models.Article>
+
+<div class="container-fluid">
+    <h2 class="mb-4">Pending Articles</h2>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Category</th>
+                    <th>Submit Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var article in Model)
+                {
+                    <tr>
+                        <td>@article.Title</td>
+                        <td>@article.Author.FullName</td>
+                        <td>@article.Category</td>
+                        <td>@article.SubmitDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>
+                            <a href="/Article/Details/@article.Id" class="btn btn-sm btn-info">View</a>
+                            <button class="btn btn-sm btn-success" onclick="approveArticle(@article.Id)">Approve</button>
+                            <button class="btn btn-sm btn-danger" onclick="rejectArticle(@article.Id)">Reject</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function approveArticle(id) {
+            if (confirm('Are you sure you want to approve this article?')) {
+                updateArticleStatus(id, 1);
+            }
+        }
+
+        function rejectArticle(id) {
+            if (confirm('Are you sure you want to reject this article?')) {
+                updateArticleStatus(id, 2);
+            }
+        }
+
+        function updateArticleStatus(id, status) {
+            fetch(`/Admin/UpdateArticleStatus/${id}?status=${status}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                }
+            });
+        }
+    </script>
+} 

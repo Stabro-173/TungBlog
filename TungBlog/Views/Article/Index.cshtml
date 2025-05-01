@@ -1,0 +1,100 @@
+﻿@model List<Article>
+@{
+    ViewData["Title"] = "Quản lý bài viết";
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2 bg-dark text-white p-4" style="min-height: 100vh;">
+            <h5 class="mb-4">Admin Panel</h5>
+            <ul class="nav flex-column">
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white" href="@Url.Action("Index", "Article")">
+                        <i class="bi bi-file-text"></i> Articles
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white" href="@Url.Action("PendingApproval", "Article")">
+                        <i class="bi bi-clock"></i> Pending Articles
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white" href="@Url.Action("Index", "Statistics")">
+                        <i class="bi bi-graph-up"></i> Statistics
+                    </a>
+                </li>
+                <li class="nav-item mb-2">
+                    <a class="nav-link text-white" href="@Url.Action("LogoutGet", "Account")">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-md-10 p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Quản lý bài viết</h2>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Tiêu đề</th>
+                                    <th>Tác giả</th>
+                                    <th>Chủ đề</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ngày đăng</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var article in Model)
+                                {
+                                    <tr>
+                                        <td>@article.Title</td>
+                                        <td>@article.Author.FullName</td>
+                                        <td>@article.Category</td>
+                                        <td>
+                                            @if (article.Status == 0)
+                                            {
+                                                <span class="badge bg-warning">Chờ duyệt</span>
+                                            }
+                                            else if (article.Status == 1)
+                                            {
+                                                <span class="badge bg-success">Đã duyệt</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">Từ chối</span>
+                                            }
+                                        </td>
+                                        <td>@article.SubmitDate.ToString("dd/MM/yyyy")</td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a href="@Url.Action("Details", new { id = article.Id })" class="btn btn-sm btn-info" title="Xem chi tiết">
+                                                    <i class="bi bi-eye"></i>
+                                                </a>
+                                                <a href="@Url.Action("Edit", new { id = article.Id })" class="btn btn-sm btn-primary" title="Chỉnh sửa">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <form asp-action="Delete" asp-route-id="@article.Id" method="post" style="display: inline;">
+                                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này?')" title="Xóa">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

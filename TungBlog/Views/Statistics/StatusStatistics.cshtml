@@ -1,0 +1,32 @@
+﻿@model dynamic
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Status Statistics";
+}
+
+<div class="container">
+    <h2 class="mb-4">📋 Thống kê bài viết theo trạng thái</h2>
+
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Trạng thái</th>
+                <th>Số lượng bài viết</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Chờ duyệt</td>
+                <td>@Model.Pending</td>
+            </tr>
+            <tr>
+                <td>Đã duyệt</td>
+                <td>@Model.Approved</td>
+            </tr>
+            <tr>
+                <td>Bị từ chối</td>
+                <td>@Model.Rejected</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

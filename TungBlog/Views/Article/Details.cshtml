@@ -1,0 +1,16 @@
+﻿@model TungBlog.Models.Article
+@{
+    ViewData["Title"] = "Chi tiết bài viết";
+}
+
+<h2>@Model.Title</h2>
+
+<p><strong>Chủ đề:</strong> @Model.Category</p>
+<p><strong>Ngày gửi:</strong> @Model.SubmitDate.ToShortDateString()</p>
+<p><strong>Trạng thái:</strong> @Model.Status</p>
+<p><strong>Tóm tắt:</strong></p>
+<p>@Model.Summary</p>
+<p><strong>Nội dung:</strong></p>
+<p>@Model.Content</p>
+
+<a href="/Article/Index" class="btn btn-secondary">Quay lại</a>

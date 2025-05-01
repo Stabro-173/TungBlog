@@ -1,0 +1,101 @@
+﻿@model IEnumerable<TungBlog.Models.Article>
+@{
+    ViewData["Title"] = "Danh sách bài viết";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container-fluid px-4">
+    <h2 class="mt-4 mb-4">Danh sách bài viết</h2>
+
+    <form method="get" asp-action="All" class="row g-2 mb-3">
+        <div class="col-md-3">
+            <input type="text" name="title" class="form-control" placeholder="Tìm theo tiêu đề..." />
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="author" class="form-control" placeholder="Tìm theo tác giả..." />
+        </div>
+        <div class="col-md-3">
+            <select name="status" class="form-select">
+                <option value="">-- Trạng thái --</option>
+                <option value="0">Chờ duyệt</option>
+                <option value="1">Đã duyệt</option>
+                <option value="2">Từ chối</option>
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+            <a asp-action="All" class="btn btn-secondary ms-2">Đặt lại</a>
+        </div>
+    </form>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-light">
+            <tr>
+                <th>Tiêu đề</th>
+                <th>Tác giả</th>
+                <th>Chủ đề</th>
+                <th>Ngày gửi</th>
+                <th>Trạng thái</th>
+                <th style="width: 150px">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.Author.FullName</td>
+                    <td>@item.Category</td>
+                    <td>@item.SubmitDate.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        @switch (item.Status)
+                        {
+                            case 0:
+                                <span class="badge bg-warning text-dark">Chờ duyệt</span>
+                                break;
+                            case 1:
+                                <span class="badge bg-success">Đã duyệt</span>
+                                break;
+                            case 2:
+                                <span class="badge bg-danger">Từ chối</span>
+                                break;
+                        }
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <a href="@Url.Action("Details", new { id = item.Id })" class="btn btn-sm btn-info">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            @if (item.Status == 0)
+                            {
+                                <a href="@Url.Action("Edit", new { id = item.Id })" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteArticle(@item.Id)">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script>
+        function deleteArticle(id) {
+            if (confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
+                fetch(`/Article/Delete/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(() => {
+                    window.location.reload();
+                });
+            }
+        }
+    </script>
+}

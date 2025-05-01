@@ -1,0 +1,88 @@
+@model List<Article>
+@{
+    ViewData["Title"] = "Bài viết của tôi";
+    Layout = "_Layout";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">@ViewData["Title"]</h1>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+            <i class="bi bi-plus-lg"></i> Thêm bài viết mới
+        </a>
+    </div>
+
+    <div class="row">
+        @foreach (var article in Model)
+        {
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <h5 class="card-title mb-0">@article.Title</h5>
+                            @switch (article.Status)
+                            {
+                                case 0:
+                                    <span class="badge bg-warning">Chờ duyệt</span>
+                                    break;
+                                case 1:
+                                    <span class="badge bg-success">Đã duyệt</span>
+                                    break;
+                                case 2:
+                                    <span class="badge bg-danger">Từ chối</span>
+                                    break;
+                            }
+                        </div>
+                        <p class="card-text text-muted">
+                            <small>
+                                <i class="bi bi-tag"></i> @article.Category |
+                                <i class="bi bi-clock"></i> @article.SubmitDate.ToString("dd/MM/yyyy HH:mm")
+                            </small>
+                        </p>
+                        <p class="card-text">@article.Summary</p>
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <div class="btn-group">
+                            <a href="@Url.Action("Details", new { id = article.Id })" class="btn btn-sm btn-info">
+                                <i class="bi bi-eye"></i> Xem
+                            </a>
+                            @if (article.Status == 0) // Chỉ cho phép sửa/xóa khi bài viết đang chờ duyệt
+                            {
+                                <a href="@Url.Action("Edit", new { id = article.Id })" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-pencil"></i> Sửa
+                                </a>
+                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteArticle(@article.Id)">
+                                    <i class="bi bi-trash"></i> Xóa
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> Bạn chưa có bài viết nào. Hãy bắt đầu viết bài!
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function deleteArticle(id) {
+            if (confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
+                fetch(`/Article/Delete/${id}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(() => {
+                    window.location.reload();
+                });
+            }
+        }
+    </script>
+} 
