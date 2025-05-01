@@ -11,7 +11,30 @@
                 <div class="card-body">
                     <h2 class="card-title mb-4">Create New Article</h2>
 
-                    <form asp-action="Create" method="post">
+                    @if (TempData["Message"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["Message"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach (var modelState in ViewData.ModelState.Values)
+                                {
+                                    foreach (var error in modelState.Errors)
+                                    {
+                                        <li>@error.ErrorMessage</li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    <form asp-controller="Article" asp-action="Create" method="post">
                         <div class="mb-3">
                             <label asp-for="Title" class="form-label">Title</label>
                             <input asp-for="Title" class="form-control" required />
@@ -38,7 +61,7 @@
 
                         <div class="text-end">
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-save"></i> Save Article
+                                <i class="bi bi-send"></i> Submit
                             </button>
                         </div>
                     </form>
@@ -50,4 +73,12 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            $('form').on('submit', function() {
+                console.log('Form submitting...');
+                return true;
+            });
+        });
+    </script>
 } 

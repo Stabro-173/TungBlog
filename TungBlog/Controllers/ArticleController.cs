@@ -107,24 +107,42 @@ namespace TungBlog.Controllers
         [HttpPost]
         public IActionResult Create(Article article)
         {
-            var userId = HttpContext.Session.GetInt32("UserId");
-            if (!userId.HasValue)
+            try
             {
-                return RedirectToAction("Login", "Account");
-            }
+                var userId = HttpContext.Session.GetInt32("UserId");
+                if (!userId.HasValue)
+                {
+                    return RedirectToAction("Login", "Account");
+                }
 
-            article.SubmitDate = DateTime.Now;
-            article.Status = 0;
-            article.UserAccountId = userId.Value;
+                // Only validate required fields
+                if (string.IsNullOrEmpty(article.Title) ||
+                    string.IsNullOrEmpty(article.Category) ||
+                    string.IsNullOrEmpty(article.Summary) ||
+                    string.IsNullOrEmpty(article.Content))
+                {
+                    ModelState.AddModelError("", "Please fill in all article information");
+                    return View(article);
+                }
 
-            if (ModelState.IsValid)
-            {
+                article.SubmitDate = DateTime.Now;
+                article.Status = 0; // Pending
+                article.UserAccountId = userId.Value;
+                article.Author = null; // Don't set navigation properties
+                article.CategoryRef = null;
+
                 _context.Articles.Add(article);
                 _context.SaveChanges();
+
+                TempData["Message"] = "Article has been submitted and is pending approval";
                 return RedirectToAction("MyArticles");
             }
-
-            return View(article);
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error in Create: {ex.Message}");
+                ModelState.AddModelError("", "An error occurred while saving the article. Please try again.");
+                return View(article);
+            }
         }
 
         // GET: /Article/Edit/{id}

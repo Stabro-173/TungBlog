@@ -59,6 +59,8 @@ namespace TungBlog.Controllers
             {
                 TotalArticles = await _context.Articles.CountAsync(),
                 PendingArticles = await _context.Articles.CountAsync(a => a.Status == 0),
+                ApprovedArticles = await _context.Articles.CountAsync(a => a.Status == 1),
+                RejectedArticles = await _context.Articles.CountAsync(a => a.Status == 2),
                 TotalAuthors = await _context.UserAccounts.CountAsync(u => u.Role == "Author"),
                 TotalCategories = await _context.Articles.Select(a => a.Category).Distinct().CountAsync()
             };

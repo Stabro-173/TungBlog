@@ -1,100 +1,138 @@
-@model TungBlog.Models.AdminStatistics
+@model AdminStatistics
 
 <div class="container-fluid">
     <div class="row mb-4">
         <div class="col-12">
-            <div class="d-flex align-items-center">
-                <div class="me-3">
-                    <label>Từ ngày:</label>
-                    <input type="date" class="form-control" />
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="form-label">From date:</label>
+                            <input type="date" class="form-control" id="startDate">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">To date:</label>
+                            <input type="date" class="form-control" id="endDate">
+                        </div>
+                        <div class="col-md-4 d-flex align-items-end">
+                            <button class="btn btn-primary w-100" onclick="applyDateFilter()">
+                                <i class="bi bi-funnel"></i> Apply Filter
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="me-3">
-                    <label>Đến ngày:</label>
-                    <input type="date" class="form-control" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <h3 class="card-title h5">Total Articles</h3>
+                    <p class="display-4 mb-0 fw-bold">@Model.TotalArticles</p>
                 </div>
-                <div class="mt-4">
-                    <button class="btn btn-primary">
-                        <i class="bi bi-check2"></i>
-                        Áp dụng
-                    </button>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark h-100">
+                <div class="card-body">
+                    <h3 class="card-title h5">Pending Articles</h3>
+                    <p class="display-4 mb-0 fw-bold">@Model.PendingArticles</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <h3 class="card-title h5">Approved Articles</h3>
+                    <p class="display-4 mb-0 fw-bold">@Model.ApprovedArticles</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white h-100">
+                <div class="card-body">
+                    <h3 class="card-title h5">Rejected Articles</h3>
+                    <p class="display-4 mb-0 fw-bold">@Model.RejectedArticles</p>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-md-4">
-            <div class="stat-card pending">
-                <div class="stat-title">Bài viết đang chờ duyệt</div>
-                <div class="stat-number">@Model.PendingArticles</div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h3 class="card-title h5 mb-0">Articles by Author</h3>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Author</th>
+                                    <th class="text-end">Articles</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var stat in ViewBag.AuthorStats)
+                                {
+                                    <tr>
+                                        <td>@stat.FullName</td>
+                                        <td class="text-end">@stat.ArticleCount</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="stat-card approved">
-                <div class="stat-title">Bài viết đã duyệt</div>
-                <div class="stat-number">@(Model.TotalArticles - Model.PendingArticles)</div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="stat-card rejected">
-                <div class="stat-title">Bài viết bị từ chối</div>
-                <div class="stat-number">0</div>
-            </div>
-        </div>
-    </div>
 
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Thống kê bài viết theo Tác giả</h5>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h3 class="card-title h5 mb-0">Articles by Category</h3>
                 </div>
                 <div class="card-body">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Tác giả</th>
-                                <th>Số bài viết</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var author in ViewBag.AuthorStats ?? new List<dynamic>())
-                            {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
                                 <tr>
-                                    <td>@author.FullName</td>
-                                    <td>@author.ArticleCount</td>
+                                    <th>Category</th>
+                                    <th class="text-end">Articles</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Thống kê bài viết theo Chủ đề</h5>
-                </div>
-                <div class="card-body">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Chủ đề</th>
-                                <th>Số bài viết</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var category in ViewBag.CategoryStats ?? new List<dynamic>())
-                            {
-                                <tr>
-                                    <td>@category.Name</td>
-                                    <td>@category.ArticleCount</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var stat in ViewBag.CategoryStats)
+                                {
+                                    <tr>
+                                        <td>@stat.Name</td>
+                                        <td class="text-end">@stat.ArticleCount</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div> 
+</div>
+
+@section Scripts {
+    <script>
+        function applyDateFilter() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+            
+            window.location.href = `/Admin/Statistics?startDate=${startDate}&endDate=${endDate}`;
+        }
+    </script>
+} 

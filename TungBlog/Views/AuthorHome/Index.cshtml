@@ -1,6 +1,64 @@
-﻿@{
-    ViewData["Title"] = "Trang Chủ Tác Giả";
+﻿@model IEnumerable<TungBlog.Models.Article>
+@{
+    ViewData["Title"] = "Welcome to TungBlog";
 }
 
-<h2 class="text-center mt-4">Chào mừng bạn, tác giả!</h2>
-<p class="text-center">Bạn có thể đăng bài, chỉnh sửa bài viết của mình tại đây.</p>
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 mb-3">Welcome to TungBlog</h1>
+        <p class="lead text-muted">Discover insightful articles from our community of authors</p>
+        <hr class="my-4 w-25 mx-auto">
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> No approved articles available at the moment.
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var article in Model)
+            {
+                <div class="col-md-6">
+                    <div class="card h-100 shadow-sm border-0">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <h4 class="card-title mb-0">@article.Title</h4>
+                                <span class="badge bg-primary rounded-pill">@article.Category</span>
+                            </div>
+                            
+                            <div class="text-muted small mb-3">
+                                <i class="bi bi-person-circle"></i> @article.Author.FullName
+                                <span class="mx-2">•</span>
+                                <i class="bi bi-calendar3"></i> @article.SubmitDate.ToString("MMMM dd, yyyy")
+                            </div>
+
+                            <p class="card-text text-muted">@article.Summary</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="@Url.Action("Details", "Article", new { id = article.Id })" 
+                                   class="btn btn-outline-primary btn-sm">
+                                    Read Article
+                                </a>
+                                <small class="text-muted">
+                                    <i class="bi bi-clock"></i> @(article.SubmitDate.ToString("HH:mm"))
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="text-center mt-5">
+            <hr class="my-4 w-25 mx-auto">
+            <p class="text-muted">
+                <i class="bi bi-book"></i> 
+                Showing @Model.Count() approved @(Model.Count() == 1 ? "article" : "articles")
+            </p>
+        </div>
+    }
+</div>

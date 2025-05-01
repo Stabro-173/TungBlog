@@ -22,7 +22,7 @@
                         <td>@article.Title</td>
                         <td>@article.Author.FullName</td>
                         <td>@article.Category</td>
-                        <td>@article.SubmitDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@article.SubmitDate.ToString("MMMM dd, yyyy HH:mm")</td>
                         <td>
                             @switch (article.Status)
                             {
@@ -38,19 +38,9 @@
                             }
                         </td>
                         <td>
-                            <div class="btn-group">
-                                <a href="@Url.Action("Details", "Article", new { id = article.Id })" class="btn btn-sm btn-info">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                                <a href="@Url.Action("Edit", "Article", new { id = article.Id })" class="btn btn-sm btn-primary">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                                <form asp-controller="Article" asp-action="Delete" asp-route-id="@article.Id" method="post" style="display: inline;">
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this article?')">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
+                            <a href="@Url.Action("Details", "Article", new { id = article.Id })" class="btn btn-sm btn-info">
+                                <i class="bi bi-eye"></i> View
+                            </a>
                         </td>
                     </tr>
                 }
@@ -61,13 +51,16 @@
 
 @section Scripts {
     <script>
-        function deleteArticle(id) {
-            if (confirm('Are you sure you want to delete this article?')) {
-                fetch(`/Article/Delete/${id}`, {
+        function updateStatus(id, status) {
+            const action = status === 1 ? 'approve' : 'reject';
+            if (confirm(`Are you sure you want to ${action} this article?`)) {
+                fetch('/Article/UpdateStatus', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
-                    }
+                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `id=${id}&status=${status}`
                 }).then(response => {
                     if (response.ok) {
                         window.location.reload();

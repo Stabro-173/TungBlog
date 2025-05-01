@@ -1,16 +1,98 @@
 ﻿@model TungBlog.Models.Article
 @{
-    ViewData["Title"] = "Chi tiết bài viết";
+    ViewData["Title"] = "Article Details";
+    var isAdmin = Context.Session.GetString("Role") == "Admin";
 }
 
-<h2>@Model.Title</h2>
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title">@Model.Title</h2>
 
-<p><strong>Chủ đề:</strong> @Model.Category</p>
-<p><strong>Ngày gửi:</strong> @Model.SubmitDate.ToShortDateString()</p>
-<p><strong>Trạng thái:</strong> @Model.Status</p>
-<p><strong>Tóm tắt:</strong></p>
-<p>@Model.Summary</p>
-<p><strong>Nội dung:</strong></p>
-<p>@Model.Content</p>
+            <div class="mb-3">
+                <strong>Category:</strong> @Model.Category
+            </div>
 
-<a href="/Article/Index" class="btn btn-secondary">Quay lại</a>
+            <div class="mb-3">
+                <strong>Submit Date:</strong> @Model.SubmitDate.ToString("MMMM dd, yyyy")
+            </div>
+
+            <div class="mb-3">
+                <strong>Status:</strong>
+                @switch (Model.Status)
+                {
+                    case 0:
+                        <span class="badge bg-warning">Pending</span>
+                        break;
+                    case 1:
+                        <span class="badge bg-success">Approved</span>
+                        break;
+                    case 2:
+                        <span class="badge bg-danger">Rejected</span>
+                        break;
+                }
+            </div>
+
+            <div class="mb-3">
+                <strong>Summary:</strong>
+                <p class="mt-2">@Model.Summary</p>
+            </div>
+
+            <div class="mb-4">
+                <strong>Content:</strong>
+                <p class="mt-2">@Model.Content</p>
+            </div>
+
+            @if (isAdmin)
+            {
+                <div class="d-flex justify-content-between align-items-center">
+                    <a href="@Url.Action("Articles", "Admin")" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Articles
+                    </a>
+                    @if (Model.Status == 0)
+                    {
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-success" onclick="updateStatus(@Model.Id, 1)">
+                                <i class="bi bi-check-lg"></i> Approve
+                            </button>
+                            <button type="button" class="btn btn-danger" onclick="updateStatus(@Model.Id, 2)">
+                                <i class="bi bi-x-lg"></i> Reject
+                            </button>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <a href="@Url.Action("MyArticles", "Article")" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to My Articles
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+@if (isAdmin)
+{
+    @section Scripts {
+        <script>
+            function updateStatus(id, status) {
+                const action = status === 1 ? 'approve' : 'reject';
+                if (confirm(`Are you sure you want to ${action} this article?`)) {
+                    fetch('/Article/UpdateStatus', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `id=${id}&status=${status}`
+                    }).then(response => {
+                        if (response.ok) {
+                            window.location.href = '@Url.Action("Articles", "Admin")';
+                        }
+                    });
+                }
+            }
+        </script>
+    }
+}
