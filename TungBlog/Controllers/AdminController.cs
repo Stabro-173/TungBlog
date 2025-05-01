@@ -48,25 +48,41 @@ namespace TungBlog.Controllers
         }
 
         // GET: Admin/Statistics
-        public async Task<IActionResult> Statistics()
+        public async Task<IActionResult> Statistics(DateTime? startDate = null, DateTime? endDate = null)
         {
             if (HttpContext.Session.GetString("Role") != "Admin")
             {
                 return RedirectToAction("AccessDenied", "Account");
             }
 
+            var query = _context.Articles.Include(a => a.Author).AsQueryable();
+
+            if (startDate.HasValue)
+            {
+                // Set time to start of day
+                var startDateTime = startDate.Value.Date;
+                query = query.Where(a => a.SubmitDate >= startDateTime);
+            }
+
+            if (endDate.HasValue)
+            {
+                // Set time to end of day
+                var endDateTime = endDate.Value.Date.AddDays(1).AddTicks(-1);
+                query = query.Where(a => a.SubmitDate <= endDateTime);
+            }
+
             var stats = new AdminStatistics
             {
-                TotalArticles = await _context.Articles.CountAsync(),
-                PendingArticles = await _context.Articles.CountAsync(a => a.Status == 0),
-                ApprovedArticles = await _context.Articles.CountAsync(a => a.Status == 1),
-                RejectedArticles = await _context.Articles.CountAsync(a => a.Status == 2),
+                TotalArticles = await query.CountAsync(),
+                PendingArticles = await query.CountAsync(a => a.Status == 0),
+                ApprovedArticles = await query.CountAsync(a => a.Status == 1),
+                RejectedArticles = await query.CountAsync(a => a.Status == 2),
                 TotalAuthors = await _context.UserAccounts.CountAsync(u => u.Role == "Author"),
-                TotalCategories = await _context.Articles.Select(a => a.Category).Distinct().CountAsync()
+                TotalCategories = await query.Select(a => a.Category).Distinct().CountAsync()
             };
 
             // Get author statistics
-            ViewBag.AuthorStats = await _context.Articles
+            ViewBag.AuthorStats = await query
                 .GroupBy(a => a.Author)
                 .Select(g => new
                 {
@@ -77,7 +93,7 @@ namespace TungBlog.Controllers
                 .ToListAsync();
 
             // Get category statistics
-            ViewBag.CategoryStats = await _context.Articles
+            ViewBag.CategoryStats = await query
                 .GroupBy(a => a.Category)
                 .Select(g => new
                 {

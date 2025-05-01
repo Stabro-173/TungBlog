@@ -8,11 +8,35 @@
                     <div class="row">
                         <div class="col-md-4">
                             <label class="form-label">From date:</label>
-                            <input type="date" class="form-control" id="startDate">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="startDate" readonly>
+                                <button class="btn btn-outline-secondary calendar-btn" type="button" data-target="startDate">
+                                    <i class="bi bi-calendar"></i>
+                                </button>
+                            </div>
+                            <div class="calendar-popup" id="startDateCalendar" style="display: none;">
+                                <div class="calendar-header">
+                                    <select class="month-select form-select"></select>
+                                    <select class="year-select form-select"></select>
+                                </div>
+                                <div class="calendar-grid"></div>
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">To date:</label>
-                            <input type="date" class="form-control" id="endDate">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="endDate" readonly>
+                                <button class="btn btn-outline-secondary calendar-btn" type="button" data-target="endDate">
+                                    <i class="bi bi-calendar"></i>
+                                </button>
+                            </div>
+                            <div class="calendar-popup" id="endDateCalendar" style="display: none;">
+                                <div class="calendar-header">
+                                    <select class="month-select form-select"></select>
+                                    <select class="year-select form-select"></select>
+                                </div>
+                                <div class="calendar-grid"></div>
+                            </div>
                         </div>
                         <div class="col-md-4 d-flex align-items-end">
                             <button class="btn btn-primary w-100" onclick="applyDateFilter()">
@@ -122,17 +146,284 @@
 </div>
 
 @section Scripts {
+    <style>
+        .calendar-popup {
+            position: absolute;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .calendar-header {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+        }
+
+        .calendar-day {
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .calendar-day:hover {
+            background-color: #e9ecef;
+        }
+
+        .calendar-day.selected {
+            background-color: #0d6efd;
+            color: white;
+        }
+
+        .calendar-day.disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .calendar-header-day {
+            font-weight: bold;
+            padding: 5px;
+        }
+
+        .calendar-day.today {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+    </style>
+
     <script>
+        class Calendar {
+            constructor(inputId) {
+                this.input = document.getElementById(inputId);
+                this.calendarElement = document.getElementById(inputId + 'Calendar');
+                this.selectedDate = null;
+                this.currentMonth = new Date().getMonth();
+                this.currentYear = new Date().getFullYear();
+                
+                this.monthSelect = this.calendarElement.querySelector('.month-select');
+                this.yearSelect = this.calendarElement.querySelector('.year-select');
+                
+                this.initializeSelects();
+                this.setupEventListeners();
+                this.render();
+            }
+
+            initializeSelects() {
+                // Populate month select
+                const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+                months.forEach((month, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = month;
+                    this.monthSelect.appendChild(option);
+                });
+                this.monthSelect.value = this.currentMonth;
+
+                // Populate year select (from current year - 10 years to current year)
+                const currentYear = new Date().getFullYear();
+                for (let year = currentYear - 10; year <= currentYear; year++) {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    this.yearSelect.appendChild(option);
+                }
+                this.yearSelect.value = this.currentYear;
+            }
+
+            setupEventListeners() {
+                this.monthSelect.addEventListener('change', () => {
+                    this.currentMonth = parseInt(this.monthSelect.value);
+                    this.render();
+                });
+
+                this.yearSelect.addEventListener('change', () => {
+                    this.currentYear = parseInt(this.yearSelect.value);
+                    this.render();
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!this.calendarElement.contains(e.target) && 
+                        !e.target.classList.contains('calendar-btn')) {
+                        this.calendarElement.style.display = 'none';
+                    }
+                });
+            }
+
+            getDaysInMonth(month, year) {
+                return new Date(year, month + 1, 0).getDate();
+            }
+
+            getFirstDayOfMonth(month, year) {
+                return new Date(year, month, 1).getDay();
+            }
+
+            formatDate(date) {
+                const months = ['January', 'February', 'March', 'April', 'May', 'June', 
+                              'July', 'August', 'September', 'October', 'November', 'December'];
+                return `${months[date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+            }
+
+            render() {
+                const gridElement = this.calendarElement.querySelector('.calendar-grid');
+                gridElement.innerHTML = '';
+
+                // Add day headers
+                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                days.forEach(day => {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'calendar-header-day';
+                    dayElement.textContent = day;
+                    gridElement.appendChild(dayElement);
+                });
+
+                const daysInMonth = this.getDaysInMonth(this.currentMonth, this.currentYear);
+                const firstDay = this.getFirstDayOfMonth(this.currentMonth, this.currentYear);
+
+                // Add empty cells for days before the first day of the month
+                for (let i = 0; i < firstDay; i++) {
+                    const emptyDay = document.createElement('div');
+                    emptyDay.className = 'calendar-day';
+                    gridElement.appendChild(emptyDay);
+                }
+
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                // Add days of the month
+                for (let day = 1; day <= daysInMonth; day++) {
+                    const dayElement = document.createElement('div');
+                    dayElement.className = 'calendar-day';
+                    dayElement.textContent = day;
+
+                    const currentDate = new Date(this.currentYear, this.currentMonth, day);
+                    
+                    // Check if this day should be disabled
+                    const isDisabled = this.isDateDisabled(currentDate);
+                    if (isDisabled) {
+                        dayElement.classList.add('disabled');
+                    } else {
+                        dayElement.addEventListener('click', () => this.selectDate(currentDate));
+                    }
+
+                    // Highlight today's date
+                    if (currentDate.getTime() === today.getTime()) {
+                        dayElement.classList.add('today');
+                    }
+
+                    if (this.selectedDate && 
+                        this.selectedDate.getDate() === day && 
+                        this.selectedDate.getMonth() === this.currentMonth && 
+                        this.selectedDate.getFullYear() === this.currentYear) {
+                        dayElement.classList.add('selected');
+                    }
+
+                    gridElement.appendChild(dayElement);
+                }
+            }
+
+            isDateDisabled(date) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                // Disable future dates
+                if (date > today) {
+                    return true;
+                }
+
+                // Check against the other calendar's selection
+                if (this.input.id === 'startDate' && window.endCalendar && window.endCalendar.selectedDate) {
+                    return date > window.endCalendar.selectedDate;
+                }
+                if (this.input.id === 'endDate' && window.startCalendar && window.startCalendar.selectedDate) {
+                    return date < window.startCalendar.selectedDate;
+                }
+                return false;
+            }
+
+            selectDate(date) {
+                if (this.isDateDisabled(date)) return;
+                
+                this.selectedDate = date;
+                this.input.value = this.formatDate(date);
+                this.render();
+                this.calendarElement.style.display = 'none';
+
+                // Trigger re-render of the other calendar
+                if (this.input.id === 'startDate' && window.endCalendar) {
+                    window.endCalendar.render();
+                } else if (this.input.id === 'endDate' && window.startCalendar) {
+                    window.startCalendar.render();
+                }
+
+                // If both dates are selected, update the URL with the new date range
+                if (window.startCalendar.selectedDate && window.endCalendar.selectedDate) {
+                    const startDate = window.startCalendar.selectedDate;
+                    const endDate = window.endCalendar.selectedDate;
+                    
+                    // Set time to end of day for end date to include the entire day
+                    endDate.setHours(23, 59, 59, 999);
+                    
+                    const formatDateForUrl = (date) => {
+                        return date.toISOString().split('T')[0];
+                    };
+                    
+                    window.location.href = `/Admin/Statistics?startDate=${formatDateForUrl(startDate)}&endDate=${formatDateForUrl(endDate)}`;
+                }
+            }
+        }
+
+        // Initialize calendars
+        document.addEventListener('DOMContentLoaded', () => {
+            window.startCalendar = new Calendar('startDate');
+            window.endCalendar = new Calendar('endDate');
+
+            document.querySelectorAll('.calendar-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const targetId = e.target.closest('.calendar-btn').dataset.target;
+                    const calendar = document.getElementById(targetId + 'Calendar');
+                    
+                    // Hide all other calendars
+                    document.querySelectorAll('.calendar-popup').forEach(cal => {
+                        if (cal.id !== calendar.id) {
+                            cal.style.display = 'none';
+                        }
+                    });
+
+                    // Toggle this calendar
+                    calendar.style.display = calendar.style.display === 'none' ? 'block' : 'none';
+                });
+            });
+        });
+
         function applyDateFilter() {
-            const startDate = document.getElementById('startDate').value;
-            const endDate = document.getElementById('endDate').value;
+            const startDate = window.startCalendar.selectedDate;
+            const endDate = window.endCalendar.selectedDate;
             
             if (!startDate || !endDate) {
                 alert('Please select both start and end dates');
                 return;
             }
             
-            window.location.href = `/Admin/Statistics?startDate=${startDate}&endDate=${endDate}`;
+            // Set time to end of day for end date to include the entire day
+            const endDateTime = new Date(endDate);
+            endDateTime.setHours(23, 59, 59, 999);
+            
+            const formatDateForUrl = (date) => {
+                return date.toISOString().split('T')[0];
+            };
+            
+            window.location.href = `/Admin/Statistics?startDate=${formatDateForUrl(startDate)}&endDate=${formatDateForUrl(endDate)}`;
         }
     </script>
 } 
