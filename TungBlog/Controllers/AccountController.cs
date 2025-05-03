@@ -20,7 +20,7 @@ namespace TungBlog.Controllers
             var userId = HttpContext.Session.GetInt32("UserId");
             if (!userId.HasValue)
             {
-                return RedirectToAction("Login");
+                return RedirectToAction("AccessDenied", "Account");
             }
 
             var user = _context.UserAccounts.Find(userId.Value);
@@ -39,7 +39,7 @@ namespace TungBlog.Controllers
             var userId = HttpContext.Session.GetInt32("UserId");
             if (!userId.HasValue)
             {
-                return RedirectToAction("Login");
+                return RedirectToAction("AccessDenied", "Account");
             }
 
             var user = _context.UserAccounts.Find(userId.Value);

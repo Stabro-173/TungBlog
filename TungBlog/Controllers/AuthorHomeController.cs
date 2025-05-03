@@ -16,6 +16,12 @@ namespace TungBlog.Controllers
 
         public IActionResult Index()
         {
+            var role = HttpContext.Session.GetString("Role");
+            if (string.IsNullOrEmpty(role) || role != "Author")
+            {
+                return RedirectToAction("AccessDenied", "Account");
+            }
+
             var approvedArticles = _context.Articles
                 .Include(a => a.Author)
                 .Where(a => a.Status == 1) // Only approved articles

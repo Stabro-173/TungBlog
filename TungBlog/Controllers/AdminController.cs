@@ -17,7 +17,8 @@ namespace TungBlog.Controllers
         // GET: Admin/Articles
         public async Task<IActionResult> Articles()
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            var role = HttpContext.Session.GetString("Role");
+            if (string.IsNullOrEmpty(role) || role != "Admin")
             {
                 return RedirectToAction("AccessDenied", "Account");
             }
@@ -33,7 +34,8 @@ namespace TungBlog.Controllers
         // GET: Admin/PendingArticles
         public async Task<IActionResult> PendingArticles()
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            var role = HttpContext.Session.GetString("Role");
+            if (string.IsNullOrEmpty(role) || role != "Admin")
             {
                 return RedirectToAction("AccessDenied", "Account");
             }
@@ -50,7 +52,8 @@ namespace TungBlog.Controllers
         // GET: Admin/Statistics
         public async Task<IActionResult> Statistics(DateTime? startDate = null, DateTime? endDate = null)
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            var role = HttpContext.Session.GetString("Role");
+            if (string.IsNullOrEmpty(role) || role != "Admin")
             {
                 return RedirectToAction("AccessDenied", "Account");
             }
@@ -110,7 +113,8 @@ namespace TungBlog.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateArticleStatus(int id, int status)
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            var role = HttpContext.Session.GetString("Role");
+            if (string.IsNullOrEmpty(role) || role != "Admin")
             {
                 return RedirectToAction("AccessDenied", "Account");
             }
