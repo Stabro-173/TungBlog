@@ -365,21 +365,6 @@
                 } else if (this.input.id === 'endDate' && window.startCalendar) {
                     window.startCalendar.render();
                 }
-
-                // If both dates are selected, update the URL with the new date range
-                if (window.startCalendar.selectedDate && window.endCalendar.selectedDate) {
-                    const startDate = window.startCalendar.selectedDate;
-                    const endDate = window.endCalendar.selectedDate;
-                    
-                    // Set time to end of day for end date to include the entire day
-                    endDate.setHours(23, 59, 59, 999);
-                    
-                    const formatDateForUrl = (date) => {
-                        return date.toISOString().split('T')[0];
-                    };
-                    
-                    window.location.href = `/Admin/Statistics?startDate=${formatDateForUrl(startDate)}&endDate=${formatDateForUrl(endDate)}`;
-                }
             }
         }
 
@@ -390,6 +375,7 @@
 
             document.querySelectorAll('.calendar-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
                     const targetId = e.target.closest('.calendar-btn').dataset.target;
                     const calendar = document.getElementById(targetId + 'Calendar');
                     

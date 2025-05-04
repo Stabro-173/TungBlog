@@ -1,11 +1,11 @@
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 
 namespace TungBlog.Services
 {
     public class PasswordHasher
     {
-        public static string HashPassword(string password)
+        public static string HashPassword(string password) // Hàm này dùng để mã hóa mật khẩu thành một chuỗi không thể đảo ngược
         {
             using (var sha256 = SHA256.Create())
             {

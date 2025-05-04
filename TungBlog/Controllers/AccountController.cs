@@ -61,7 +61,7 @@ namespace TungBlog.Controllers
             user.FullName = updatedUser.FullName;
             user.Email = updatedUser.Email;
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid) //Kiểm tra xem dữ liệu có hợp lệ không (validation phía server).
             {
                 _context.SaveChanges();
                 TempData["Message"] = "Cập nhật thông tin thành công";
@@ -75,9 +75,9 @@ namespace TungBlog.Controllers
         [HttpGet]
         public IActionResult Register()
         {
-            if (HttpContext.Session.GetString("Role") != null)
+            if (HttpContext.Session.GetString("Role") != null) // nếu khác null thì đã đăng nhập rồi
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Home"); //→ Không cho vào trang đăng ký nữa → chuyển về trang chủ.
             }
             return View();
         }
@@ -87,12 +87,12 @@ namespace TungBlog.Controllers
         public IActionResult Register(UserAccount user)
         {
             ModelState.Remove("Role");
-            user.Role = "Author";  // Default role is Author
+            user.Role = "Author";  //Gán mặc định vai trò người dùng là "Author"
 
             if (_context.UserAccounts.Any(u => u.Username == user.Username))
             {
                 ModelState.AddModelError("Username", "Tên đăng nhập đã tồn tại");
-                return View(user);
+                return View(user); 
             }
 
             if (_context.UserAccounts.Any(u => u.Email == user.Email))
