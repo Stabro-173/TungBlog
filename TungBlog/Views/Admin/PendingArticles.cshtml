@@ -23,7 +23,6 @@
                         <td>@article.Category</td>
                         <td>@article.SubmitDate.ToString("dd/MM/yyyy HH:mm")</td>
                         <td>
-                            <a href="/Article/Details/@article.Id" class="btn btn-sm btn-info">View</a>
                             <button class="btn btn-sm btn-success" onclick="approveArticle(@article.Id)">Approve</button>
                             <button class="btn btn-sm btn-danger" onclick="rejectArticle(@article.Id)">Reject</button>
                         </td>

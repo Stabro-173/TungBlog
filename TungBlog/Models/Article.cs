@@ -12,8 +12,5 @@
 
         public int UserAccountId { get; set; }
         public virtual UserAccount? Author { get; set; }
-
-        public int? CategoryId { get; set; }
-        public virtual Category? CategoryRef { get; set; }
     }
 }

@@ -78,7 +78,10 @@ namespace TungBlog.Controllers
             }
 
             var article = _context.Articles.Find(id);
-            if (article == null) return NotFound();
+            if (article == null)
+            {
+                return NotFound();
+            }
 
             article.Status = status;
             _context.SaveChanges();
@@ -111,22 +114,17 @@ namespace TungBlog.Controllers
 
             try
             {
-                // Only validate required fields
                 if (string.IsNullOrEmpty(article.Title) ||
-                    string.IsNullOrEmpty(article.Category) ||
                     string.IsNullOrEmpty(article.Summary) ||
-                    string.IsNullOrEmpty(article.Content))
+                    string.IsNullOrEmpty(article.Content) ||
+                    string.IsNullOrEmpty(article.Category))
                 {
-                    ModelState.AddModelError("", "Please fill in all article information");
-                    return View(article);
+                    return BadRequest("All fields are required");
                 }
 
                 article.SubmitDate = DateTime.Now;
                 article.Status = 0; // Pending
                 article.UserAccountId = userId.Value;
-                article.Author = null; // Don't set navigation properties
-                article.CategoryRef = null;
-
                 _context.Articles.Add(article);
                 _context.SaveChanges();
 
@@ -146,12 +144,15 @@ namespace TungBlog.Controllers
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             var role = HttpContext.Session.GetString("Role");
-            if (string.IsNullOrEmpty(role))
+            if (string.IsNullOrEmpty(role) || role == "Admin")
             {
                 return RedirectToAction("AccessDenied", "Account");
             }
             var article = _context.Articles.Find(id);
-            if (article == null) return NotFound();
+            if (article == null)
+            {
+                return NotFound();
+            }
             if (role == "Author" && (article.UserAccountId != userId || article.Status != 0))
             {
                 return RedirectToAction("AccessDenied", "Account");
@@ -166,12 +167,15 @@ namespace TungBlog.Controllers
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             var role = HttpContext.Session.GetString("Role");
-            if (string.IsNullOrEmpty(role))
+            if (string.IsNullOrEmpty(role) || role == "Admin")
             {
                 return RedirectToAction("AccessDenied", "Account");
             }
             var article = _context.Articles.Find(updatedArticle.Id);
-            if (article == null) return NotFound();
+            if (article == null)
+            {
+                return NotFound();
+            }
             if (role == "Author" && (article.UserAccountId != userId || article.Status != 0))
             {
                 return RedirectToAction("AccessDenied", "Account");
@@ -185,7 +189,7 @@ namespace TungBlog.Controllers
                 article.Category = updatedArticle.Category;
 
                 _context.SaveChanges();
-                return RedirectToAction(role == "Admin" ? "Index" : "MyArticles");
+                return RedirectToAction("MyArticles");
             }
 
             return View(updatedArticle);
@@ -218,12 +222,15 @@ namespace TungBlog.Controllers
         {
             var userId = HttpContext.Session.GetInt32("UserId");
             var role = HttpContext.Session.GetString("Role");
-            if (string.IsNullOrEmpty(role))
+            if (string.IsNullOrEmpty(role) || role == "Admin")
             {
                 return RedirectToAction("AccessDenied", "Account");
             }
             var article = _context.Articles.Find(id);
-            if (article == null) return NotFound();
+            if (article == null)
+            {
+                return NotFound();
+            }
             if (role == "Author" && (article.UserAccountId != userId || article.Status != 0))
             {
                 return RedirectToAction("AccessDenied", "Account");
@@ -231,7 +238,7 @@ namespace TungBlog.Controllers
 
             _context.Articles.Remove(article);
             _context.SaveChanges();
-            return RedirectToAction(role == "Admin" ? "Index" : "MyArticles");
+            return RedirectToAction("MyArticles");
         }
     }
 }

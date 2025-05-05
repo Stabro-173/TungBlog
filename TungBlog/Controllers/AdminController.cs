@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TungBlog.Data;
 using TungBlog.Models;
@@ -81,10 +81,10 @@ namespace TungBlog.Controllers
                 ApprovedArticles = await query.CountAsync(a => a.Status == 1),
                 RejectedArticles = await query.CountAsync(a => a.Status == 2),
                 TotalAuthors = await _context.UserAccounts.CountAsync(u => u.Role == "Author"),
-                TotalCategories = await query.Select(a => a.Category).Distinct().CountAsync()
+                TotalCategories = await query.Select(a => a.Category).Distinct().CountAsync() // Loại bỏ trùng rồi đếm
             };
 
-            // Get author statistics
+            // Get author statistics and their article counts
             ViewBag.AuthorStats = await query
                 .GroupBy(a => a.Author)
                 .Select(g => new
@@ -95,7 +95,7 @@ namespace TungBlog.Controllers
                 .OrderByDescending(x => x.ArticleCount)
                 .ToListAsync();
 
-            // Get category statistics
+            // Get category statistics and their article counts
             ViewBag.CategoryStats = await query
                 .GroupBy(a => a.Category)
                 .Select(g => new

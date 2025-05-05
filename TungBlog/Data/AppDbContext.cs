@@ -12,7 +12,6 @@ namespace TungBlog.Data
 
         public DbSet<UserAccount> UserAccounts { get; set; }
         public DbSet<Article> Articles { get; set; }
-        public DbSet<Category> Categories { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

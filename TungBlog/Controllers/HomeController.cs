@@ -46,7 +46,6 @@ namespace TungBlog.Controllers
 
             var approvedArticles = _context.Articles
                 .Include(a => a.Author)
-                .Include(a => a.Category)
                 .Where(a => a.Status == 1) // Only approved articles
                 .OrderByDescending(a => a.SubmitDate)
                 .ToList();
